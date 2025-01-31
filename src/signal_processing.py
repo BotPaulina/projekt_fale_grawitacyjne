@@ -1,6 +1,6 @@
 def bandpass_filter(data, lowcut, highcut, fs):
     """
-    Apply bandpass filter
+    Apply bandpass filter.
 
     Parameters
     ----------
