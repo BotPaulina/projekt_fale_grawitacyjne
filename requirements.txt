@@ -1,0 +1,7 @@
+matplotlib==3.8.0
+gwpy
+numpy
+scipy
+h5py
+wget
+lmfit
