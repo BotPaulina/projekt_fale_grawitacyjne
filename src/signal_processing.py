@@ -1,24 +1,30 @@
+from scipy.signal import butter, filtfilt, iirnotch
+
 def bandpass_filter(data, lowcut, highcut, fs):
     """
     Apply bandpass filter.
 
     Parameters
     ----------
-    data : to be determined
-        Description.
+    data : np.array
+        Data to be filtered.
     lowcut : float
-        lower frequency.
+        Upper cutoff frequency.
     highcut : float
-        upper frequency.
+        Lower cutoff frequency.
     fs : int
         The sampling frequency.
 
     Returns
     -------
-    return type
-        Description.
+    np.array
+        Filtered data.
     """
-    pass
+    nyquist_rate = 0.5 * fs
+    lowcut = lowcut / nyquist_rate
+    highcut = highcut / nyquist_rate
+    numerator, denominator = butter(order, [lowcut, highcut], btype='band')
+    return filtfilt(numerator, denominator, data)
 
 def compute_psd(data, fs):
     """
