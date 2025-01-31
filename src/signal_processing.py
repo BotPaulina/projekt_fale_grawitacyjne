@@ -40,7 +40,7 @@ def compute_psd(data, fs):
 
 def whiten_signal(data, fs):
     """
-    Compute the power spectral density.
+    Whiten the signal by dividing by the square root of the PSD.
 
     Parameters
     ----------
