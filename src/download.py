@@ -82,6 +82,7 @@ def main():
     strain_data = load_ligo_data(cfg.DATA_PATH, "strain/Strain")
     ligo_df = create_dataframe(strain_data, cfg.FS)
     save_dataframe(ligo_df, cfg.CSV_PATH)
+    return ligo_df
 
 if __name__ == "__main__":
     main()
