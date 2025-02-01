@@ -1,4 +1,5 @@
 from scipy.signal import butter, filtfilt
+import config as cfg
 
 def bandpass_filter(data, lowcut, highcut, fs, order=4):
     """
@@ -65,7 +66,7 @@ def whiten_signal(data, fs):
     pass
 
 
-def process_dataframe(df, fs):
+def process_dataframe(df):
     """
     Apply all signal processing functions to the dataframe.
 
@@ -81,5 +82,5 @@ def process_dataframe(df, fs):
     df : pd.DataFrame
         Data frame with added column corresponding to processed data.
     """
-    df["processed"] = bandpass_filter(df["strain"].values, fs)
+    df["processed"] = bandpass_filter(df["strain"].values, 1, 1000, fs=cfg.FS, order=4)
     return df
