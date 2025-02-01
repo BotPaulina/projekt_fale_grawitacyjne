@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from scipy.signal import butter, filtfilt
+from scipy.signal import butter, filtfilt, iirnotch
 import config as cfg
 
 def bandpass_filter(data, lowcut, highcut, fs, order=2):
@@ -48,7 +48,7 @@ def compute_psd(data, fs):
     """
     pass
 
-def whiten_signal(data, fs):
+def whiten_signal(data):
     """
     Whiten the signal by dividing by the square root of the PSD.
 
@@ -56,16 +56,40 @@ def whiten_signal(data, fs):
     ----------
     data : np.array
         Data to be whitened.
-    fs : int
-        The sampling frequency.
 
     Returns
     -------
     data : np.array
         Whitened data.
     """
-    pass
+    fft_data = np.fft.rfft(data)
+    norm_fft = fft_data / np.sqrt(np.abs(fft_data) ** 2 + 1e-10)
+    return np.fft.irfft(norm_fft)
 
+def notch_filter(data, fs, freq=60, quality_factor=30):
+    """
+    Remove specific frequencies.
+
+    Parameters
+    ----------
+    data : np.array
+        Data to be processed.
+    fs : int
+        The sampling frequency.
+    freq : int
+        Frequency to be deleted.
+    quality_factor : int
+        Parameter for the irrnotch function.
+
+    Returns
+    -------
+    data : np.array
+        Filtered data.
+    """
+    nyquist_rate = 0.5 * fs
+    w0 = freq / nyquist_rate
+    numerator, denominator = iirnotch(w0, quality_factor)
+    return filtfilt(numerator, denominator, data)
 
 def process_dataframe(df):
     """
@@ -75,15 +99,15 @@ def process_dataframe(df):
     ----------
     df : pd.DataFrame
         Data frame with 'time' and 'strain' columns.
-    fs : int
-        The sampling frequency.
 
     Returns
     -------
     df : pd.DataFrame
-        Data frame with added column corresponding to processed data.
+        Data frame with added columns corresponding to processed data.
     """
     df["strain"] = df["strain"].interpolate(method="linear", limit_direction="both")
     df["processed"] = bandpass_filter(df["strain"].values, 35, 350, fs=cfg.FS, order=4)
+    df["notch_filtered"] = notch_filter(df["processed"].values, cfg.FS, 60, 30)
+    df["whitened"] = whiten_signal(df["notch_filtered"].values)
 
     return df
