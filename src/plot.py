@@ -18,6 +18,11 @@ def plot_dataframe(df):
     plt.xlabel("Time [s]")
     plt.legend()
 
-    plt.show()
+    plt.subplot(3, 1, 2)
+    plt.plot(df["time"], df["processed"], color='pink', label="Processed Signal")
+    plt.ylabel("Strain")
+    plt.xlabel("Time [s]")
+    plt.legend()
+    #plt.show()
 
     plt.savefig(cfg.PLOTS_PATH)

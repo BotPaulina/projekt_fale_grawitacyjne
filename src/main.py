@@ -9,6 +9,7 @@ def main():
     """
     df = download_main()
     df = process_dataframe(df)
+    print(df.head())
     plot_dataframe(df)
 
 if __name__ == "__main__":

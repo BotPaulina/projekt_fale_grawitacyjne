@@ -1,7 +1,9 @@
+import numpy as np
+import pandas as pd
 from scipy.signal import butter, filtfilt
 import config as cfg
 
-def bandpass_filter(data, lowcut, highcut, fs, order=4):
+def bandpass_filter(data, lowcut, highcut, fs, order=2):
     """
     Apply bandpass filter.
 
@@ -24,9 +26,8 @@ def bandpass_filter(data, lowcut, highcut, fs, order=4):
         Filtered data.
     """
     nyquist_rate = 0.5 * fs
-    low = lowcut / nyquist_rate
-    high = highcut / nyquist_rate
-    numerator, denominator = butter(order, [low, high], fs=fs, btype='band')
+    low, high = lowcut / nyquist_rate, highcut / nyquist_rate
+    numerator, denominator = butter(order, [low, high], btype='band', analog=False)
     return filtfilt(numerator, denominator, data)
 
 def compute_psd(data, fs):
@@ -82,5 +83,7 @@ def process_dataframe(df):
     df : pd.DataFrame
         Data frame with added column corresponding to processed data.
     """
-    df["processed"] = bandpass_filter(df["strain"].values, 1, 1000, fs=cfg.FS, order=4)
+    df["strain"] = df["strain"].interpolate(method="linear", limit_direction="both")
+    df["processed"] = bandpass_filter(df["strain"].values, 35, 350, fs=cfg.FS, order=4)
+
     return df
