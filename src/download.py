@@ -74,10 +74,13 @@ def save_dataframe(df, csv_path):
     csv_path : str
         Path for the csv file to be saved.
     """
-    df.to_csv(csv_path, index=False)
-    print(f"Data saved to {csv_path}")
+    if not os.path.exists(csv_path):
+        df.to_csv(csv_path, index=False)
+        print(f"Data saved to {csv_path}")
+    else:
+        print(f"File already exists: {csv_path}")
 
-def main():
+def get_data():
     download_ligo_data(cfg.URL, cfg.DATA_PATH)
     strain_data = load_ligo_data(cfg.DATA_PATH, "strain/Strain")
     ligo_df = create_dataframe(strain_data, cfg.FS)
@@ -85,4 +88,4 @@ def main():
     return ligo_df
 
 if __name__ == "__main__":
-    main()
+    get_data()

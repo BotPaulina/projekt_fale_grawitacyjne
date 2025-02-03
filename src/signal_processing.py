@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.signal import butter, filtfilt, iirnotch
 import config as cfg
+from gwpy.timeseries import TimeSeries
 
 def bandpass_filter(data, lowcut, highcut, fs, order=2):
     """
@@ -29,24 +30,6 @@ def bandpass_filter(data, lowcut, highcut, fs, order=2):
     low, high = lowcut / nyquist_rate, highcut / nyquist_rate
     numerator, denominator = butter(order, [low, high], btype='band', analog=False)
     return filtfilt(numerator, denominator, data)
-
-def compute_psd(data, fs):
-    """
-    Compute the power spectral density.
-
-    Parameters
-    ----------
-    data : to be determined
-        Description.
-    fs : int
-        The sampling frequency.
-
-    Returns
-    -------
-    data : np.array
-        Description.
-    """
-    pass
 
 def whiten_signal(data):
     """
@@ -91,6 +74,12 @@ def notch_filter(data, fs, freq=60, quality_factor=30):
     numerator, denominator = iirnotch(w0, quality_factor)
     return filtfilt(numerator, denominator, data)
 
+def analyze_strain_data(data, fs, lowcut=50, highcut=300, fftlength=4):
+    ts = TimeSeries(data, sample_rate=fs)
+    ts = ts.bandpass(lowcut, highcut)
+    ts = ts.whiten(fftlength=fftlength)
+    return ts.value
+
 def process_dataframe(df):
     """
     Apply all signal processing functions to the dataframe.
@@ -107,7 +96,8 @@ def process_dataframe(df):
     """
     df["strain"] = df["strain"].interpolate(method="linear", limit_direction="both")
     df["processed"] = bandpass_filter(df["strain"].values, 35, 350, fs=cfg.FS, order=4)
-    df["notch_filtered"] = notch_filter(df["processed"].values, cfg.FS, 60, 30)
-    df["whitened"] = whiten_signal(df["notch_filtered"].values)
+    df["processed"] = notch_filter(df["processed"].values, cfg.FS, 60, 30)
+    df["processed"] = whiten_signal(df["processed"].values)
+    df["processed_differently"] = analyze_strain_data(df["strain"].values, cfg.FS)
 
     return df

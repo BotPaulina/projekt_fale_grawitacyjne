@@ -1,16 +1,14 @@
-from download import main as download_main
+from download import get_data
 from signal_processing import process_dataframe
-from plot import plot_dataframe
-import config as cfg
+from plot import plot_all_strains
 
 def main():
     """
     Main function to process and analyze LIGO strain data.
     """
-    df = download_main()
+    df = get_data()
     df = process_dataframe(df)
-    print(df.head())
-    plot_dataframe(df)
+    plot_all_strains(df)
 
 if __name__ == "__main__":
     main()
