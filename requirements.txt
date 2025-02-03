@@ -7,3 +7,4 @@ wget
 lmfit
 pandas==2.2.3
 requests
+pyTest==8.3.4
