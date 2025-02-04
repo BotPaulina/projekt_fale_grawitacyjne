@@ -1,0 +1,5 @@
+outs:
+- md5: be3fc22b7a3e952c2bf47f990caab79e
+  size: 665294784
+  hash: md5
+  path: series.csv

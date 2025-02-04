@@ -1,0 +1,5 @@
+outs:
+- md5: 4c2e3c520208f2eed81c811fc1c416e9
+  size: 130158262
+  hash: md5
+  path: series.hdf5
